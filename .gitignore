@@ -1,0 +1,5 @@
+.env
+.venv
+create_duckdb.ipynb
+testes.ipynb
+data/dados.db
