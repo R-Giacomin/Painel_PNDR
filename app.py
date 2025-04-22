@@ -217,7 +217,7 @@ def analyze_data(df):
     """Envia os dados para a LLM para análise e insights."""
     json_data = df.to_json(orient='records')
     response = client.models.generate_content(
-    model="gemini-2.0-flash",
+    model="gemini-2.5-flash-preview-04-17",
     config=types.GenerateContentConfig(
         system_instruction="""Você é um especialista em desenvolvimento regional no Brasil, analise os seguintes dados e forneça insights relevantes sobre o aspecto do desenvolvimento regional que eles representam.
     Considere a importância dos dados, possíveis tendências, correlações e implicações para políticas públicas.
@@ -228,13 +228,14 @@ def analyze_data(df):
 
 def plot_data(df):
     """Cria gráficos com Plotly."""
-    st.write("### Visualização dos Dados")
-    fig = px.bar(df, x="município", y="value")  
-    st.plotly_chart(fig)
+    if {'município', 'value'}.issubset(df.columns):
+        st.write("### Visualização dos Dados")
+        fig = px.bar(df, x="município", y="value")  
+        st.plotly_chart(fig)
 
 def create_map(df, geojson_data):
     """Cria mapas com Folium se houver coordenadas."""
-    if {'latitude', 'longitude'}.issubset(df.columns):
+    if {'latitude', 'longitude', 'value'}.issubset(df.columns):
         st.write("### Mapa do Indicador")
         df = df.rename(columns={'codigo_ibge': 'codarea'})
         m = folium.Map(location=[df['latitude'].mean(), df['longitude'].mean()], zoom_start=5)
@@ -362,7 +363,7 @@ with col[0]:
     st.markdown("**1.** Qual o indicador de Sustentabilidade Fiscal dos municípios da Bahia para 2022?")
     st.markdown("**2.** Crie um gráfico do indicador de Desmatamento paro o Pará em 2021")
     st.markdown("**3.** Como está o indicador de Desnutrição no Maranhão?")
-    st.markdown("**4.** Crie um mapa do indicador Salário Médio no Mercado Formal para o Paraná em 2020")
+    st.markdown("**4.** Crie um mapa do indicador Distorção Idade-Série para o Paraná em 2020")
     st.markdown("**5.** Como está o Indicador Coeficiente de Diversificação Econômica na região imediata de Toledo?")
     st.markdown("**6.** Quais os dados do Índice de Centralidade para o Mato Grosso em 2021, considere o temo exato 'Mato Grosso'? :gray-badge[pedir pelo termo exato para evitar Mato Grosso do Sul]") 
 
